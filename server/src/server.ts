@@ -1,15 +1,18 @@
 const router = require("express").Router();
 import { Request, Response, NextFunction } from "express";
 
-const cors = require("cors");
-const app = require("./app");
+//const cors = require("cors");
+//const app = require("./app");
+import cors from "cors";
 
-app.use(cors());
 require("dotenv").config();
 import express from "express";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import axios from "axios";
+
+const app = express();
+app.use(cors());
 //import Recipe, { RecipeSchema } from "./models/Recipe.model.js";
 //import connectDB from "./db/index.js";
 
@@ -17,10 +20,15 @@ import axios from "axios";
 const PORT = process.env.PORT || 5545;
 
 app.get("/recipes/:query", async (req: Request, res: Response) => {
-  const response = await axios.get(
-    `https://api.edamam.com/api/recipes/v2?type=public&q=${req.params.query}&app_id=${process.env.VITE_APP_ID}&app_key=${process.env.VITE_APP_KEY}`
-  );
-  res.json(response.data.hits.recipe);
+  try {
+    const response = await axios.get(
+      `https://api.edamam.com/api/recipes/v2?type=public&q=${req.params.query}&app_id=${process.env.VITE_APP_ID}&app_key=${process.env.VITE_APP_KEY}`
+    );
+    res.json(response.data.hits);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching recipes" });
+  }
 });
 
 app.listen(PORT, () => {
