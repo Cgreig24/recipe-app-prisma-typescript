@@ -19,6 +19,7 @@ const prisma = require("../db/index");
 //const prisma = new PrismaClient();
 const jwt_middleware_1 = __importDefault(require("../middleware/jwt.middleware"));
 const yourRecipesRouter = express_1.default.Router({ mergeParams: true });
+//UserProfile
 router.get("/:userid", jwt_middleware_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     // console.log(req.params);
     //const { userId } = req.payload._id;

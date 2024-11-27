@@ -21,7 +21,7 @@ function UserProfilePage() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const { user } = useContext(AuthContext);
-  const { userid } = useParams();
+  //const { userid } = useParams();
 
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
     undefined

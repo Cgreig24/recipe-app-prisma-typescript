@@ -1,4 +1,37 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -12,30 +45,37 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const router = require("express").Router();
+//const router = require("express").Router();
+const express_1 = __importStar(require("express"));
+const prisma = require("../db/index");
+const router = (0, express_1.Router)();
 //const cors = require("cors");
 //const app = require("./app");
 const cors_1 = __importDefault(require("cors"));
-require("dotenv").config();
-const express_1 = __importDefault(require("express"));
+//const dotenv = require("dotenv");
+//dotenv.config();
 const morgan_1 = __importDefault(require("morgan"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const axios_1 = __importDefault(require("axios"));
+const dotenv_1 = __importDefault(require("dotenv"));
 const jwt_middleware_1 = __importDefault(require("./middleware/jwt.middleware"));
+//import prisma from "./db/index"
 //import connectDB from "./db/index";
-const connectDB = require("./db/index");
+dotenv_1.default.config();
+//const connectDB = require("./db/index");
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use((0, morgan_1.default)("dev"));
-app.use(express_1.default.urlencoded({ extended: false }));
 app.use((0, cookie_parser_1.default)());
+app.use(express_1.default.urlencoded({ extended: false }));
 //import Recipe, { RecipeSchema } from "./models/Recipe.model.js";
 //import connectDB from "./db/index.js";
 // ℹ️ Sets the PORT for our app to have access to it. If no env has been set, we hard code it to 5005
 const PORT = process.env.PORT || 5545;
 const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
 app.use("/auth", auth_routes_1.default);
+//UserProfile
 const user_routes_1 = __importDefault(require("./routes/user.routes"));
 app.use("/api/user", jwt_middleware_1.default, user_routes_1.default);
 //searchbar api
@@ -47,6 +87,43 @@ app.get("/recipes/:query", (req, res) => __awaiter(void 0, void 0, void 0, funct
     catch (error) {
         console.error(error);
         res.status(500).json({ message: "Error fetching recipes" });
+    }
+}));
+//Fetch and store recipe
+router.post("/recipes/:recipeid", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { recipeid } = req.params;
+    const recipeUrl = `${process.env.VITE_BASE_URL}/api/recipes/v2/${recipeid}?type=public&app_id=${process.env.VITE_APP_ID}&app_key=${process.env.VITE_APP_KEY}`;
+    try {
+        const response = yield axios_1.default.get(recipeUrl);
+        // console.log(response);
+        const recipeData = response.data; // Assuming response contains an array of recipes
+        if (!recipeData) {
+            return res.status(400).json({ error: "No recipe data found" });
+        }
+        const newRecipe = yield prisma.recipe.create({
+            data: {
+                title: recipeData.recipe.label,
+                image: recipeData.recipe.image,
+                uri: recipeData.recipe.uri,
+                recipeId: recipeData.recipe.uri.split("#recipe_")[1],
+                ingredients: recipeData.recipe.ingredientLines,
+                source: recipeData.recipe.source, // Or any other field containing instructions
+                url: recipeData.recipe.url,
+                servings: recipeData.recipe.yield,
+                dishType: recipeData.recipe.dishType,
+                cuisineType: recipeData.recipe.cuisineType,
+                healthLabels: recipeData.recipe.healthLabels,
+                totalTime: recipeData.recipe.totalTime,
+                apiLink: recipeData._links.self.href,
+            },
+        });
+        res
+            .status(200)
+            .json({ message: "Recipe saved successfully", data: newRecipe });
+    }
+    catch (error) {
+        console.error("Error fetching and saving recipe", error);
+        res.status(500).json({ error: "Failed to fetch recipes" });
     }
 }));
 app.listen(PORT, () => {

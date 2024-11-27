@@ -30,8 +30,7 @@ const router = express.Router();
 const saltRounds = 10;
 
 // POST  /auth/signup
-// ...
-
+//Add new user
 router.post(
   "/signup",
   async (
@@ -99,8 +98,6 @@ router.post(
 );
 
 // POST  /auth/login
-// ...
-
 router.post(
   "/login",
   async (

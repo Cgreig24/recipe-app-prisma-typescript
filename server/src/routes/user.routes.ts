@@ -10,6 +10,7 @@ interface AuthenticatedRequest extends Request {
   payload: { id: number };
 }
 
+//UserProfile
 router.get(
   "/:userid",
   isAuthenticated,

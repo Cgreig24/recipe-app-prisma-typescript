@@ -22,7 +22,7 @@ const jwt_middleware_1 = __importDefault(require("../middleware/jwt.middleware")
 const router = express_1.default.Router();
 const saltRounds = 10;
 // POST  /auth/signup
-// ...
+//Add new user
 router.post("/signup", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password, username } = req.body;
     if (email === "" || password === "" || username === "") {
@@ -67,7 +67,6 @@ router.post("/signup", (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     }
 }));
 // POST  /auth/login
-// ...
 router.post("/login", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Login route hit!");
     console.log(req.body);
