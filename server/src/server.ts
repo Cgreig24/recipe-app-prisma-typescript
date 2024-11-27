@@ -10,14 +10,28 @@ import express from "express";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import axios from "axios";
+import isAuthenticated from "./middleware/jwt.middleware";
+//import connectDB from "./db/index";
+const connectDB = require("./db/index");
 
 const app = express();
+
 app.use(cors());
+app.use(express.json());
+app.use(morgan("dev"));
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 //import Recipe, { RecipeSchema } from "./models/Recipe.model.js";
 //import connectDB from "./db/index.js";
 
 // ℹ️ Sets the PORT for our app to have access to it. If no env has been set, we hard code it to 5005
 const PORT = process.env.PORT || 5545;
+
+import authRouter from "./routes/auth.routes";
+app.use("/auth", authRouter);
+
+import userRouter from "./routes/user.routes";
+app.use("api/user", isAuthenticated, userRouter);
 
 //searchbar api
 app.get("/recipes/:query", async (req: Request, res: Response) => {
