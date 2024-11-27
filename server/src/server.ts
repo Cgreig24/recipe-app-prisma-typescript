@@ -19,6 +19,7 @@ app.use(cors());
 // ℹ️ Sets the PORT for our app to have access to it. If no env has been set, we hard code it to 5005
 const PORT = process.env.PORT || 5545;
 
+//searchbar api
 app.get("/recipes/:query", async (req: Request, res: Response) => {
   try {
     const response = await axios.get(
