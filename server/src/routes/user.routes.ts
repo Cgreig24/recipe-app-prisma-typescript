@@ -7,7 +7,7 @@ import isAuthenticated from "../middleware/jwt.middleware";
 const yourRecipesRouter = express.Router({ mergeParams: true });
 
 interface AuthenticatedRequest extends Request {
-  payload: { _id: number };
+  payload: { id: number };
 }
 
 router.get(
@@ -24,8 +24,8 @@ router.get(
 
     try {
       //const user = await User.findById(userId);
-      const { _id } = req.payload;
-      const user = await prisma.user.findUnique({ where: { id: _id } });
+      const { id } = req.payload;
+      const user = await prisma.user.findUnique({ where: { id } });
       if (!user) {
         res.status(404).json({ message: "User not found" });
       }

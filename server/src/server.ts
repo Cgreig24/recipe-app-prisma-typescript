@@ -31,7 +31,7 @@ import authRouter from "./routes/auth.routes";
 app.use("/auth", authRouter);
 
 import userRouter from "./routes/user.routes";
-app.use("api/user", isAuthenticated, userRouter);
+app.use("/api/user", isAuthenticated, userRouter);
 
 //searchbar api
 app.get("/recipes/:query", async (req: Request, res: Response) => {

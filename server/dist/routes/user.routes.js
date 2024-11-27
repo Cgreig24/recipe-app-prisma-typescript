@@ -25,8 +25,8 @@ router.get("/:userid", jwt_middleware_1.default, (req, res, next) => __awaiter(v
     // console.log(id);
     try {
         //const user = await User.findById(userId);
-        const { _id } = req.payload;
-        const user = yield prisma.user.findUnique({ where: { id: _id } });
+        const { id } = req.payload;
+        const user = yield prisma.user.findUnique({ where: { id } });
         if (!user) {
             res.status(404).json({ message: "User not found" });
         }

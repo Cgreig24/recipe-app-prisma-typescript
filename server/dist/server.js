@@ -37,7 +37,7 @@ const PORT = process.env.PORT || 5545;
 const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
 app.use("/auth", auth_routes_1.default);
 const user_routes_1 = __importDefault(require("./routes/user.routes"));
-app.use("api/user", jwt_middleware_1.default, user_routes_1.default);
+app.use("/api/user", jwt_middleware_1.default, user_routes_1.default);
 //searchbar api
 app.get("/recipes/:query", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
