@@ -54,7 +54,7 @@ app.get("/recipes/:query", async (req: Request, res: Response) => {
 });
 
 //Fetch and store recipe
-router.post(
+app.post(
   "/recipes/:recipeid",
   async (req: Request<{ recipeid: string }>, res: Response) => {
     const { recipeid } = req.params;

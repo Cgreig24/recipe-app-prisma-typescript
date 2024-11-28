@@ -47,7 +47,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 //const router = require("express").Router();
 const express_1 = __importStar(require("express"));
-const prisma = require("../db/index");
+const prisma = require("./db/index");
 const router = (0, express_1.Router)();
 //const cors = require("cors");
 //const app = require("./app");
@@ -90,7 +90,7 @@ app.get("/recipes/:query", (req, res) => __awaiter(void 0, void 0, void 0, funct
     }
 }));
 //Fetch and store recipe
-router.post("/recipes/:recipeid", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post("/recipes/:recipeid", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { recipeid } = req.params;
     const recipeUrl = `${process.env.VITE_BASE_URL}/api/recipes/v2/${recipeid}?type=public&app_id=${process.env.VITE_APP_ID}&app_key=${process.env.VITE_APP_KEY}`;
     try {
@@ -107,9 +107,9 @@ router.post("/recipes/:recipeid", (req, res) => __awaiter(void 0, void 0, void 0
                 uri: recipeData.recipe.uri,
                 recipeId: recipeData.recipe.uri.split("#recipe_")[1],
                 ingredients: recipeData.recipe.ingredientLines,
+                servings: recipeData.recipe.yield,
                 source: recipeData.recipe.source, // Or any other field containing instructions
                 url: recipeData.recipe.url,
-                servings: recipeData.recipe.yield,
                 dishType: recipeData.recipe.dishType,
                 cuisineType: recipeData.recipe.cuisineType,
                 healthLabels: recipeData.recipe.healthLabels,
