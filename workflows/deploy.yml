@@ -1,13 +1,13 @@
 name: Deploy
- 
+
 on:
   push:
     paths:
-      - prisma/migrations/** # Run this workflow when migrations are updated
+      - server/prisma/migrations/** # Run this workflow when migrations are updated
     branches:
       - main
   workflow_dispatch: # Allow manual triggering from GitHub Actions UI
- 
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
