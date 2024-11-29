@@ -217,6 +217,72 @@ app.get(
   }
 );
 
+app.delete(
+  "/your-recipes/:recipeid",
+  isAuthenticated,
+  async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { recipeid } = req.params;
+      const userId = req.payload.id;
+      const recipe = await prisma.yourRecipes.delete({
+        where: {
+          id: +recipeid,
+        },
+      });
+
+      if (!recipe) {
+        return res
+          .status(404)
+          .json({ error: "Recipe not found or not authorized" });
+      }
+
+      //await recipe.delete();
+
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error while retrieving recipe", error);
+      res.status(500).json({ error: "Failed to delete recipe" });
+    }
+  }
+);
+
+//add additional notes
+app.patch(
+  "/your-recipes/:recipeid",
+  isAuthenticated,
+  async (req: AuthenticatedRequest, res: Response) => {
+    const { recipeid } = req.params;
+    const { ingredients, notes } = req.body;
+
+    try {
+      const updateData: any = {};
+
+      if (ingredients) {
+        updateData.ingredients = ingredients;
+      }
+
+      if (notes) {
+        updateData.notes = {
+          push: notes,
+        };
+      }
+
+      const updatedRecipe = await prisma.yourRecipes.update({
+        where: { id: +recipeid },
+        data: updateData,
+      });
+
+      res.status(200).json({
+        message: "Notes updated successfully",
+        data: updatedRecipe,
+      });
+    } catch (error) {
+      console.error("Error updating notes:", error);
+      res.status(500).json({ error: "Failed to update notes" });
+    }
+  }
+);
+
 app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);
 });

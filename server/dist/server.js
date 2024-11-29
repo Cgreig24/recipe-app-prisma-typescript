@@ -227,6 +227,56 @@ app.get("/your-recipes/:recipeid", jwt_middleware_1.default, (req, res) => __awa
         res.status(500).json({ error: "Failed to fetch recipe" });
     }
 }));
+app.delete("/your-recipes/:recipeid", jwt_middleware_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { recipeid } = req.params;
+        const userId = req.payload.id;
+        const recipe = yield prisma.yourRecipes.delete({
+            where: {
+                id: +recipeid,
+            },
+        });
+        if (!recipe) {
+            return res
+                .status(404)
+                .json({ error: "Recipe not found or not authorized" });
+        }
+        //await recipe.delete();
+        res.status(204).send();
+    }
+    catch (error) {
+        console.error("Error while retrieving recipe", error);
+        res.status(500).json({ error: "Failed to delete recipe" });
+    }
+}));
+//add additional notes
+app.patch("/your-recipes/:recipeid", jwt_middleware_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { recipeid } = req.params;
+    const { ingredients, notes } = req.body;
+    try {
+        const updateData = {};
+        if (ingredients) {
+            updateData.ingredients = ingredients;
+        }
+        if (notes) {
+            updateData.notes = {
+                push: notes,
+            };
+        }
+        const updatedRecipe = yield prisma.yourRecipes.update({
+            where: { id: +recipeid },
+            data: updateData,
+        });
+        res.status(200).json({
+            message: "Notes updated successfully",
+            data: updatedRecipe,
+        });
+    }
+    catch (error) {
+        console.error("Error updating notes:", error);
+        res.status(500).json({ error: "Failed to update notes" });
+    }
+}));
 app.listen(PORT, () => {
     console.log(`Server listening on http://localhost:${PORT}`);
 });
