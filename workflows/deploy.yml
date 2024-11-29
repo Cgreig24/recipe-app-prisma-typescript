@@ -3,10 +3,10 @@ name: Deploy
 on:
   push:
     paths:
-      - "server/prisma/migrations/**" # Ensure this path matches
+      - server/prisma/migrations/** # Run this workflow when migrations are updated
     branches:
-      - master # Ensure the branch name is correct
-  workflow_dispatch: # Allows manual triggering
+      - master
+  workflow_dispatch: # Allow manual triggering from GitHub Actions UI
 
 jobs:
   deploy:
