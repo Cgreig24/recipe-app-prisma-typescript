@@ -126,6 +126,96 @@ app.post("/recipes/:recipeid", (req, res) => __awaiter(void 0, void 0, void 0, f
         res.status(500).json({ error: "Failed to fetch recipes" });
     }
 }));
+//Add to your-recipes
+app.post("/your-recipes/:recipeid", jwt_middleware_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    console.log("req.headers.authorization", req.headers.authorization);
+    const { recipeid } = req.params;
+    console.log("payload:::", req.payload);
+    //console.log(recipeid);
+    //const payload = req.payload as JwtPayload;
+    const userId = (_a = req.payload) === null || _a === void 0 ? void 0 : _a.id;
+    // const { id } = req.payload;
+    //const userId = await prisma.user.findUnique({ where: { id } });
+    // if (req.payload._id !== userId) {
+    //   return res.status(403).json({ error: "User not authorized" });
+    // }
+    if (!userId) {
+        return res.status(403).json({ message: "User ID not found in payload" });
+    }
+    try {
+        const recipe = yield prisma.recipe.findFirst({
+            where: { recipeId: recipeid },
+        });
+        if (!recipe) {
+            return res.status(400).json({ error: "Recipe not found" });
+        }
+        const newYourRecipe = yield prisma.yourRecipes.create({
+            data: {
+                title: recipe.title,
+                image: recipe.image,
+                uri: recipe.uri,
+                recipeId: recipe.recipeId, // Reference the recipe's ID
+                ingredients: recipe.ingredients,
+                servings: recipe.servings,
+                source: recipe.source,
+                url: recipe.url,
+                dishType: recipe.dishType,
+                cuisineType: recipe.cuisineType,
+                healthLabels: recipe.healthLabels,
+                totalTime: recipe.totalTime,
+                apiLink: recipe.apiLink,
+                userId,
+            },
+        });
+        {
+            /*
+        const { _id, ...newRecipe } = recipe.toObject();
+        const newYourRecipe = await prisma.yourRecipes.create({
+          ...newRecipe,
+          userId: req.payload.id,
+        });
+        await newYourRecipe.save();
+    */
+        }
+        res
+            .status(200)
+            .json({ message: "Recipe saved successfully", data: newYourRecipe });
+    }
+    catch (error) {
+        console.error("Error fetching and saving recipe", error);
+        res.status(500).json({ error: "Failed to fetch recipes" });
+    }
+}));
+{
+    /*
+  
+  //fetch recipes for /your-recipes list
+  app.get(
+    "/your-recipes",
+    isAuthenticated,
+    async (req: Request, res: Response) => {
+      try {
+        const userId = req.payload?.id;
+        const recipes = await prisma.yourRecipes.findMany({
+          where: { userId },
+          include: { Recipe: true },
+        });
+        if (!recipes || recipes.length === 0) {
+          return res
+            .status(404)
+            .json({ message: "No recipes found for this user" });
+        }
+        res.status(200).json({ data: recipes });
+      } catch (error) {
+        console.error("Error fetching users recipes", error);
+        res.status(500).json({ error: "Failed to fetch recipes" });
+      }
+    }
+  );
+  
+  */
+}
 app.listen(PORT, () => {
     console.log(`Server listening on http://localhost:${PORT}`);
 });

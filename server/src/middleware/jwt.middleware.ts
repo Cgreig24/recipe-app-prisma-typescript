@@ -1,8 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
+function isJwtPayload(payload: string | JwtPayload): payload is JwtPayload {
+  return (payload as JwtPayload).id !== undefined;
+}
+
 interface CustomRequest extends Request {
-  payload?: JwtPayload | string;
+  payload?: JwtPayload;
 }
 
 // Instantiate the JWT token validation middleware
@@ -26,13 +30,17 @@ const isAuthenticated = (
     const payload = jwt.verify(
       tokenString,
       process.env.TOKEN_SECRET as string
-    ) as JwtPayload;
+    ) as string | JwtPayload;
 
     // Add payload to the request object as req.payload for use in next middleware or route
-    req.payload = payload;
-    console.log("AuthenticatedPayload:", req.payload);
-    // Call next() to pass the request to the next middleware function or route
-    next();
+    if (isJwtPayload(payload)) {
+      req.payload = payload;
+      console.log("AuthenticatedPayload:", req.payload);
+      // Call next() to pass the request to the next middleware function or route
+      return next();
+    } else {
+      res.status(401).json({ message: "Invalid token payload" });
+    }
   } catch (error) {
     // We catch the error here and return a 401 status code and an error message
     // The middleware throws an error if unable to validate the token. It throws an error if:

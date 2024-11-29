@@ -4,6 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+function isJwtPayload(payload) {
+    return payload.id !== undefined;
+}
 // Instantiate the JWT token validation middleware
 const isAuthenticated = (req, res, next) => {
     const token = req.headers.authorization;
@@ -18,10 +21,15 @@ const isAuthenticated = (req, res, next) => {
         }
         const payload = jsonwebtoken_1.default.verify(tokenString, process.env.TOKEN_SECRET);
         // Add payload to the request object as req.payload for use in next middleware or route
-        req.payload = payload;
-        console.log("AuthenticatedPayload:", req.payload);
-        // Call next() to pass the request to the next middleware function or route
-        next();
+        if (isJwtPayload(payload)) {
+            req.payload = payload;
+            console.log("AuthenticatedPayload:", req.payload);
+            // Call next() to pass the request to the next middleware function or route
+            return next();
+        }
+        else {
+            res.status(401).json({ message: "Invalid token payload" });
+        }
     }
     catch (error) {
         // We catch the error here and return a 401 status code and an error message
