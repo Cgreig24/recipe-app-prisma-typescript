@@ -169,19 +169,16 @@ app.post(
   }
 );
 
-{
-  /*
-
 //fetch recipes for /your-recipes list
 app.get(
   "/your-recipes",
   isAuthenticated,
-  async (req: Request, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     try {
       const userId = req.payload?.id;
       const recipes = await prisma.yourRecipes.findMany({
         where: { userId },
-        include: { Recipe: true },
+        //  include: { Recipe: true },
       });
       if (!recipes || recipes.length === 0) {
         return res
@@ -195,9 +192,6 @@ app.get(
     }
   }
 );
-
-*/
-}
 
 app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);

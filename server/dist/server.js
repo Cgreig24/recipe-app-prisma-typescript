@@ -187,35 +187,27 @@ app.post("/your-recipes/:recipeid", jwt_middleware_1.default, (req, res) => __aw
         res.status(500).json({ error: "Failed to fetch recipes" });
     }
 }));
-{
-    /*
-  
-  //fetch recipes for /your-recipes list
-  app.get(
-    "/your-recipes",
-    isAuthenticated,
-    async (req: Request, res: Response) => {
-      try {
-        const userId = req.payload?.id;
-        const recipes = await prisma.yourRecipes.findMany({
-          where: { userId },
-          include: { Recipe: true },
+//fetch recipes for /your-recipes list
+app.get("/your-recipes", jwt_middleware_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const userId = (_a = req.payload) === null || _a === void 0 ? void 0 : _a.id;
+        const recipes = yield prisma.yourRecipes.findMany({
+            where: { userId },
+            include: { Recipe: true },
         });
         if (!recipes || recipes.length === 0) {
-          return res
-            .status(404)
-            .json({ message: "No recipes found for this user" });
+            return res
+                .status(404)
+                .json({ message: "No recipes found for this user" });
         }
         res.status(200).json({ data: recipes });
-      } catch (error) {
+    }
+    catch (error) {
         console.error("Error fetching users recipes", error);
         res.status(500).json({ error: "Failed to fetch recipes" });
-      }
     }
-  );
-  
-  */
-}
+}));
 app.listen(PORT, () => {
     console.log(`Server listening on http://localhost:${PORT}`);
 });

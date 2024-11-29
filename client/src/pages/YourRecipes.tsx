@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, SyntheticEvent } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { Link, useNavigate } from "react-router-dom";
@@ -21,7 +21,7 @@ interface YourRecipe {
   url: string;
 }
 
-function YourRecipes() {
+const YourRecipes: React.FC = () => {
   const { user } = useContext(AuthContext);
   const [yourRecipeFetch, setYourRecipeFetch] = useState<YourRecipe[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,9 +57,9 @@ function YourRecipes() {
     }
   }, [user]);
 
-  const handleYourRecipeClick = (recipeid: YourRecipe) => {
+  const handleYourRecipeClick = (recipe: YourRecipe) => {
     // const recipeid = recipe._id;
-    navigate(`/your-recipes/${recipeid}`);
+    navigate(`/your-recipes/${recipe.id}`);
   };
 
   return (
@@ -71,7 +71,7 @@ function YourRecipes() {
               <div
                 className="prose"
                 key={recipe.id}
-                onClick={() => handleYourRecipeClick(recipe.id)}
+                onClick={() => handleYourRecipeClick(recipe)}
               >
                 <h2 className="text-primary text-transform: capitalize text-center text-ellipsis overflow-hidden h-16 pt-2 px-1">
                   {recipe.title}
@@ -80,8 +80,9 @@ function YourRecipes() {
                   <img
                     className="w-full h-53 object-cover border-4 border-neutral rounded-xl"
                     src={recipe.image}
-                    onError={(e) => {
-                      e.target.src = cartoonFood;
+                    onError={(e: SyntheticEvent<HTMLImageElement, Event>) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = cartoonFood;
                     }}
                     alt="image not found"
                   />
@@ -139,6 +140,6 @@ function YourRecipes() {
       )}
     </>
   );
-}
+};
 
 export default YourRecipes;
