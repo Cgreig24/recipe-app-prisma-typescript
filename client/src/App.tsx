@@ -10,6 +10,7 @@ import UserProfilePage from "./pages/UserProfilePage";
 import RecipesPage from "./pages/RecipesPage";
 import RecipeDetails from "./pages/RecipeDetails";
 import YourRecipes from "./pages/YourRecipes";
+import YourRecipeDetails from "./pages/YourRecipesDetails";
 
 function App() {
   // const [count, setCount] = useState(0);
@@ -28,6 +29,10 @@ function App() {
           <Route path="/recipes" element={<RecipesPage />} />
           <Route path="/recipes/:recipeid" element={<RecipeDetails />} />
           <Route path="/your-recipes" element={<YourRecipes />} />
+          <Route
+            path="/your-recipes/:recipeid"
+            element={<YourRecipeDetails />}
+          />
         </Routes>
       </div>
     </>

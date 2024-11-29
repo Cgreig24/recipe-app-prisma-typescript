@@ -193,6 +193,30 @@ app.get(
   }
 );
 
+//fetch recipes for your-recipes details page
+app.get(
+  "/your-recipes/:recipeid",
+  isAuthenticated,
+  async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { recipeid } = req.params;
+
+      const recipe = await prisma.yourRecipes.findUnique({
+        where: {
+          id: +recipeid,
+        },
+      });
+      if (!recipe) {
+        return res.status(404).json({ error: "recipe not found" });
+      }
+      res.status(200).json({ data: recipe });
+    } catch (error) {
+      console.error("Error fetching recipe", error);
+      res.status(500).json({ error: "Failed to fetch recipe" });
+    }
+  }
+);
+
 app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);
 });

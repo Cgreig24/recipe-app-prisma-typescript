@@ -194,7 +194,7 @@ app.get("/your-recipes", jwt_middleware_1.default, (req, res) => __awaiter(void 
         const userId = (_a = req.payload) === null || _a === void 0 ? void 0 : _a.id;
         const recipes = yield prisma.yourRecipes.findMany({
             where: { userId },
-            include: { Recipe: true },
+            //  include: { Recipe: true },
         });
         if (!recipes || recipes.length === 0) {
             return res
@@ -206,6 +206,25 @@ app.get("/your-recipes", jwt_middleware_1.default, (req, res) => __awaiter(void 
     catch (error) {
         console.error("Error fetching users recipes", error);
         res.status(500).json({ error: "Failed to fetch recipes" });
+    }
+}));
+//fetch recipes for your-recipes details page
+app.get("/your-recipes/:recipeid", jwt_middleware_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { recipeid } = req.params;
+        const recipe = yield prisma.yourRecipes.findUnique({
+            where: {
+                id: +recipeid,
+            },
+        });
+        if (!recipe) {
+            return res.status(404).json({ error: "recipe not found" });
+        }
+        res.status(200).json({ data: recipe });
+    }
+    catch (error) {
+        console.error("Error fetching recipe", error);
+        res.status(500).json({ error: "Failed to fetch recipe" });
     }
 }));
 app.listen(PORT, () => {
