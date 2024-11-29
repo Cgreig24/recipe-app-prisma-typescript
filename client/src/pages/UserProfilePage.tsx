@@ -9,6 +9,7 @@ interface UserProfile {
   id: string;
   email: string;
   username: string;
+  dateCreated: string;
 }
 
 interface AuthContextType {
@@ -83,6 +84,10 @@ function UserProfilePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-24 mb-4 border-b pb-4">
                 <p className="text-left mb-2 border-b pb-2">
                   <strong>Email:</strong> {userProfile.email}
+                </p>
+                <p>
+                  {" "}
+                  <strong>Date Joined:</strong> {userProfile.dateCreated}
                 </p>
               </div>
             </>
