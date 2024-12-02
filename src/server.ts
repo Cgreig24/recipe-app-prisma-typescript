@@ -1,23 +1,14 @@
-//const router = require("express").Router();
 import express, { Router, Request, Response, NextFunction } from "express";
 const prisma = require("./db/index");
 const router = Router();
-//const cors = require("cors");
-//const app = require("./app");
 import cors from "cors";
-
-//const dotenv = require("dotenv");
-//dotenv.config();
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import axios from "axios";
 import dotenv from "dotenv";
 import isAuthenticated from "./middleware/jwt.middleware";
-//import prisma from "./db/index"
-//import connectDB from "./db/index";
 
 dotenv.config();
-//const connectDB = require("./db/index");
 
 const app: express.Application = express();
 const FRONTEND_URL = process.env.ORIGIN || "http://localhost:3000";
@@ -33,10 +24,6 @@ app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 
-//import Recipe, { RecipeSchema } from "./models/Recipe.model.js";
-//import connectDB from "./db/index.js";
-
-// ℹ️ Sets the PORT for our app to have access to it. If no env has been set, we hard code it to 5005
 const PORT = process.env.PORT || 5545;
 
 import authRouter from "./routes/auth.routes";
@@ -60,6 +47,11 @@ app.get("/recipes/:query", async (req: Request, res: Response) => {
 });
 
 //Fetch and store recipe
+import recipeRouter from "./routes/recipe.routes";
+app.use("/api/recipes", isAuthenticated, recipeRouter);
+
+{
+  /* 
 app.post(
   "/recipes/:recipeid",
   async (req: Request<{ recipeid: string }>, res: Response) => {
@@ -68,7 +60,7 @@ app.post(
     try {
       const response = await axios.get(recipeUrl);
       // console.log(response);
-      const recipeData = response.data; // Assuming response contains an array of recipes
+      const recipeData = response.data;
 
       if (!recipeData) {
         return res.status(400).json({ error: "No recipe data found" });
@@ -82,7 +74,7 @@ app.post(
           recipeId: recipeData.recipe.uri.split("#recipe_")[1],
           ingredients: recipeData.recipe.ingredientLines,
           servings: recipeData.recipe.yield,
-          source: recipeData.recipe.source, // Or any other field containing instructions
+          source: recipeData.recipe.source,
           url: recipeData.recipe.url,
           dishType: recipeData.recipe.dishType,
           cuisineType: recipeData.recipe.cuisineType,
@@ -101,6 +93,8 @@ app.post(
     }
   }
 );
+*/
+}
 
 interface AuthenticatedRequest extends Request {
   payload: { id: number };
@@ -114,14 +108,8 @@ app.post(
     console.log("req.headers.authorization", req.headers.authorization);
     const { recipeid } = req.params;
     console.log("payload:::", req.payload);
-    //console.log(recipeid);
-    //const payload = req.payload as JwtPayload;
+
     const userId = req.payload?.id;
-    // const { id } = req.payload;
-    //const userId = await prisma.user.findUnique({ where: { id } });
-    // if (req.payload._id !== userId) {
-    //   return res.status(403).json({ error: "User not authorized" });
-    // }
 
     if (!userId) {
       return res.status(403).json({ message: "User ID not found in payload" });
@@ -140,7 +128,7 @@ app.post(
           title: recipe.title,
           image: recipe.image,
           uri: recipe.uri,
-          recipeId: recipe.recipeId, // Reference the recipe's ID
+          recipeId: recipe.recipeId,
           ingredients: recipe.ingredients,
           servings: recipe.servings,
           source: recipe.source,
@@ -153,17 +141,6 @@ app.post(
           userId,
         },
       });
-
-      {
-        /* 
-    const { _id, ...newRecipe } = recipe.toObject();
-    const newYourRecipe = await prisma.yourRecipes.create({
-      ...newRecipe,
-      userId: req.payload.id,
-    });
-    await newYourRecipe.save();
-*/
-      }
 
       res
         .status(200)
@@ -184,7 +161,6 @@ app.get(
       const userId = req.payload?.id;
       const recipes = await prisma.yourRecipes.findMany({
         where: { userId },
-        //  include: { Recipe: true },
       });
       if (!recipes || recipes.length === 0) {
         return res
@@ -241,8 +217,6 @@ app.delete(
           .status(404)
           .json({ error: "Recipe not found or not authorized" });
       }
-
-      //await recipe.delete();
 
       res.status(204).send();
     } catch (error) {

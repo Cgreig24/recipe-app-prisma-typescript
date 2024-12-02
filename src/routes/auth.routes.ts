@@ -1,10 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import bcrypt from "bcryptjs";
 import jwt, { JwtPayload } from "jsonwebtoken";
-//import { PrismaClient, User as PrismaUser } from "@prisma/client";
 const prisma = require("../db/index");
-//const prisma = new PrismaClient();
-
 import isAuthenticated from "../middleware/jwt.middleware";
 
 declare global {
@@ -159,14 +156,7 @@ router.get(
   "/verify",
   isAuthenticated,
   (req: Request, res: Response, next: NextFunction) => {
-    // <== CREATE NEW ROUTE
-
-    // If JWT token is valid the payload gets decoded by the
-    // isAuthenticated middleware and made available on `req.payload`
     console.log(`req.payload`, req.payload);
-
-    // Send back the object with user data
-    // previously set as the token payload
     res.status(200).json(req.payload);
   }
 );
