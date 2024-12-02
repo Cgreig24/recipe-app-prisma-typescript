@@ -47,11 +47,6 @@ app.get("/recipes/:query", async (req: Request, res: Response) => {
 });
 
 //Fetch and store recipe
-import recipeRouter from "./routes/recipe.routes";
-app.use("/api/recipes", isAuthenticated, recipeRouter);
-
-{
-  /* 
 app.post(
   "/recipes/:recipeid",
   async (req: Request<{ recipeid: string }>, res: Response) => {
@@ -93,8 +88,6 @@ app.post(
     }
   }
 );
-*/
-}
 
 interface AuthenticatedRequest extends Request {
   payload: { id: number };
