@@ -20,8 +20,14 @@ dotenv.config();
 //const connectDB = require("./db/index");
 
 const app: express.Application = express();
+const FRONTEND_URL = process.env.ORIGIN || "http://localhost:3000";
 
-app.use(cors());
+app.set("trust proxy", 1);
+app.use(
+  cors({
+    origin: [FRONTEND_URL],
+  })
+);
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cookieParser());
